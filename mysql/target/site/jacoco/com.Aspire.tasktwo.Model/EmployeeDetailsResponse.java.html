@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeDetailsResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tasktwo</a> &gt; <a href="index.source.html" class="el_package">com.Aspire.tasktwo.Model</a> &gt; <span class="el_source">EmployeeDetailsResponse.java</span></div><h1>EmployeeDetailsResponse.java</h1><pre class="source lang-java linenums">package com.Aspire.tasktwo.Model;
+
+
+//import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
+
+public class EmployeeDetailsResponse {
+    private String message;
+    private ManagerResponse details;
+    private List&lt;EmployeeResponse&gt; employeeList;
+
+    // Constructors
+<span class="nc" id="L14">    public EmployeeDetailsResponse() {}</span>
+
+<span class="fc" id="L16">    public EmployeeDetailsResponse(String message, ManagerResponse details, List&lt;EmployeeResponse&gt; employeeList) {</span>
+<span class="fc" id="L17">        this.message = message;</span>
+<span class="fc" id="L18">        this.details = details;</span>
+<span class="fc" id="L19">        this.employeeList = employeeList;</span>
+<span class="fc" id="L20">    }</span>
+
+    public String getMessage() {
+<span class="fc" id="L23">        return message;</span>
+    }
+
+    public void setMessage(String message) {
+<span class="nc" id="L27">        this.message = message;</span>
+<span class="nc" id="L28">    }</span>
+
+    public ManagerResponse getDetails() {
+<span class="fc" id="L31">        return details;</span>
+    }
+
+    public void setDetails(ManagerResponse details) {
+<span class="nc" id="L35">        this.details = details;</span>
+<span class="nc" id="L36">    }</span>
+
+    public List&lt;EmployeeResponse&gt; getEmployeeList() {
+<span class="fc" id="L39">        return employeeList;</span>
+    }
+
+    public void setEmployeeList(List&lt;EmployeeResponse&gt; employeeList) {
+<span class="nc" id="L43">        this.employeeList = employeeList;</span>
+<span class="nc" id="L44">    }</span>
+
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

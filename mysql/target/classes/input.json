@@ -1,0 +1,56 @@
+{
+    "message": "Successfully fetched",
+    "accountManager": "managerSales",
+    "department": "Sales",
+    "id": 1,
+    "employeeList": [
+        {
+            "name": "managerSales",
+            "id": 1,
+            "designation": "Account Manager",
+            "department": "Sales",
+            "email": "manSales@aspire.com",
+            "mobile": "0000000000",
+            "location": "Trivandrum",
+            "dateOfJoining": "2010-06-28T12:57:59",
+            "createdTime": "2010-06-28T12:57:59",
+            "updatedTime": "2010-06-28T12:57:59"
+        },
+        {
+            "name": "managerQA",
+            "id": 2,
+            "designation": "Account Manager",
+            "department": "QA",
+            "email": "manQA@aspire.com",
+            "mobile": "0000000000",
+            "location": "Trivandrum",
+            "dateOfJoining": "2011-06-28T12:57:59",
+            "createdTime": "2011-06-28T12:57:59",
+            "updatedTime": "2011-06-28T12:57:59"
+        },
+        {
+            "name": "testSales3",
+            "id": 103,
+            "designation": "Associate",
+            "department": "Sales",
+            "email": "testSales@aspire.com",
+            "mobile": "0000000000",
+            "location": "Trivandrum",
+            "dateOfJoining": "2022-06-28T12:57:59",
+            "createdTime": "2022-06-28T12:57:59",
+            "updatedTime": "2022-06-28T12:57:59"
+        },
+        {
+            "name": "mangerDelivery",
+            "id": 3,
+            "designation": "Account Manager",
+            "department": "Delivery",
+            "email": "manDelivery@aspire.com",
+            "mobile": "0000000000",
+            "location": "Trivandrum",
+            "dateOfJoining": "2012-06-28T12:57:59",
+            "createdTime": "2012-06-28T12:57:59",
+            "updatedTime": "2012-06-28T12:57:59"
+        }
+    ]
+}

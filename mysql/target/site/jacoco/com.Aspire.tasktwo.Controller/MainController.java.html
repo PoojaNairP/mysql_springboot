@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tasktwo</a> &gt; <a href="index.source.html" class="el_package">com.Aspire.tasktwo.Controller</a> &gt; <span class="el_source">MainController.java</span></div><h1>MainController.java</h1><pre class="source lang-java linenums">package com.Aspire.tasktwo.Controller;
+
+import java.util.List;
+import java.util.Map;
+
+import com.Aspire.tasktwo.Model.Employee;
+import com.Aspire.tasktwo.Model.EmployeeDetailsResponse;
+import com.Aspire.tasktwo.Model.UpdateEmployee;
+import com.Aspire.tasktwo.Service.MainService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping(&quot;/api/employees&quot;)
+public class MainController {
+
+    @Autowired
+    private final MainService mainService;
+
+    // @Autowired
+    // private PostService postService;
+    // private PutService putService;
+    // private GetService getService;
+    // private DeleteService deleteService;
+
+<span class="fc" id="L37">    public MainController(MainService mainService){</span>
+<span class="fc" id="L38">        this.mainService=mainService;</span>
+<span class="fc" id="L39">    }</span>
+
+    // public MainController(PostService postService,PutService putService, GetService getService, DeleteService deleteService){
+    //     this.postService=postService;
+    //     this.putService=putService;
+    //     this.getService=getService;
+    //     this.deleteService=deleteService;
+    // }
+    
+
+    @PostMapping(&quot;addData&quot;)
+    public ResponseEntity&lt;Map&lt;String,String&gt;&gt; addData(@RequestBody @Valid List&lt;Employee&gt; employees) {
+<span class="fc" id="L51">        return mainService.postData(employees);</span>
+    }
+
+    // @PutMapping(&quot;/update-manager&quot;)
+    // public ResponseEntity&lt;Map&lt;String, String&gt;&gt; updateEmployeeManager(@RequestBody Map&lt;String, Integer&gt; requestBody) {
+    //     int employeeId = requestBody.get(&quot;employeeId&quot;);
+    //     int newManagerId = requestBody.get(&quot;managerId&quot;);
+    //     return putService.updateEmployeeManagers(employeeId, newManagerId);
+    // }
+
+    @PutMapping(&quot;/update-managers&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; updateEmployeeManagers(@RequestBody List&lt;UpdateEmployee&gt; employeeManagerPairs) {
+        // Pass the list of employee-manager pairs to the service
+<span class="fc" id="L64">        return mainService.updateEmployeeManagers(employeeManagerPairs);</span>
+    }
+
+    @GetMapping(&quot;/get-employees&quot;)
+    public ResponseEntity&lt;EmployeeDetailsResponse&gt; getEmployeeDetails(@RequestParam(defaultValue = &quot;0&quot;)int managerId, @RequestParam(defaultValue = &quot;-1&quot;)int yearsOfExperience) {
+        // Pass the list of employee-manager pairs to the service
+<span class="fc" id="L70">        return mainService.getEmployeeDetails(managerId,yearsOfExperience);</span>
+    }
+
+    @DeleteMapping(&quot;/deleteEmployee&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; deleteEmployee(@RequestParam int employeeId) {
+<span class="fc" id="L75">        return mainService.deleteEmployee(employeeId);</span>
+    }
+
+
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

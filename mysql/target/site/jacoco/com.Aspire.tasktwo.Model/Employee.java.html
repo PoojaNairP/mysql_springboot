@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Employee.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tasktwo</a> &gt; <a href="index.source.html" class="el_package">com.Aspire.tasktwo.Model</a> &gt; <span class="el_source">Employee.java</span></div><h1>Employee.java</h1><pre class="source lang-java linenums">package com.Aspire.tasktwo.Model;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+//import java.time.format.DateTimeParseException;
+import java.util.Objects;
+
+//import java.time.LocalDateTime;
+//import java.util.Objects;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+// import lombok.AllArgsConstructor;
+// import lombok.Data;
+// import lombok.NoArgsConstructor;
+
+@Document
+public class Employee {
+
+    
+
+    @Id
+    private Integer employeeId;
+
+    //@NotNull(message = &quot;Name cannot be null&quot;)
+    private String name;
+
+  //  @Pattern(regexp = &quot;Associate|Account Manager&quot;, message = &quot;Designation can only be 'Account Manager' or 'Associate'&quot;)
+    private String designation;
+
+  //  @Pattern(regexp = &quot;^\\S+@\\S+\\.\\S+$&quot;, message = &quot;Invalid email format&quot;)
+    private String email;
+
+  //  @Pattern(regexp = &quot;Delivery|Sales|QA|Engineering|BA&quot;, message = &quot;Department can only be one of the following - Delivery / Sales / QA / Engineering / BA&quot;)
+    private String department;
+
+ //   @Pattern(regexp = &quot;^\\d{10}$&quot;, message = &quot;Mobile number must be a 10-digit number&quot;)
+    private String mobile;
+
+  //  @NotNull(message = &quot;Location cannot be null&quot;)
+    private String location;
+
+    private Integer managerId;
+
+  //  @NotNull(message = &quot;Date of joining cannot be null&quot;)
+    private LocalDateTime dateOfJoining;
+
+    public Employee(Integer employeeId, String name, String designation, String email, String department, String mobile,
+<span class="fc" id="L51">            String location, Integer managerId, LocalDateTime dateOfJoining) {</span>
+<span class="fc" id="L52">        this.employeeId = employeeId;</span>
+<span class="fc" id="L53">        this.name = name;</span>
+<span class="fc" id="L54">        this.designation = designation;</span>
+<span class="fc" id="L55">        this.email = email;</span>
+<span class="fc" id="L56">        this.department = department;</span>
+<span class="fc" id="L57">        this.mobile = mobile;</span>
+<span class="fc" id="L58">        this.location = location;</span>
+<span class="fc" id="L59">        this.managerId = managerId;</span>
+<span class="fc" id="L60">        this.dateOfJoining = dateOfJoining;</span>
+<span class="fc" id="L61">    }</span>
+
+<span class="fc" id="L63">    public Employee() {</span>
+<span class="fc" id="L64">    }</span>
+
+    public List&lt;String&gt; validate() {
+<span class="fc" id="L67">        List&lt;String&gt; errors = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L69" title="1 of 4 branches missed.">        if (employeeId == null || employeeId &lt;= 0) {</span>
+<span class="fc" id="L70">            errors.add(&quot;Employee ID must be a positive number.&quot;);</span>
+        }
+
+<span class="pc bpc" id="L73" title="1 of 4 branches missed.">        if (name == null || name.trim().isEmpty()) {</span>
+<span class="fc" id="L74">            errors.add(&quot;Name cannot be null or empty.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (!isDesignationValid()) {</span>
+<span class="fc" id="L78">            errors.add(&quot;Designation can only be 'Associate' or 'Account Manager'.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (!isEmailValid()) {</span>
+<span class="fc" id="L82">            errors.add(&quot;Invalid email format.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (!isDepartmentValid()) {</span>
+<span class="fc" id="L86">            errors.add(&quot;Department must be one of the following: Delivery, Sales, QA, Engineering, or BA.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (!isMobileValid()) {</span>
+<span class="fc" id="L90">            errors.add(&quot;Mobile number must be a 10-digit number.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (!isLocationValid()) {</span>
+<span class="fc" id="L94">            errors.add(&quot;Location cannot be null or empty.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (dateOfJoining == null) {</span>
+<span class="fc" id="L98">            errors.add(&quot;Date of joining cannot be null.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (!isManagerIdValid()) {</span>
+<span class="fc" id="L102">            errors.add(&quot;Manager ID must be 0 if designation is 'Account Manager' or a valid ID otherwise.&quot;);</span>
+        }
+
+<span class="fc" id="L105">        System.out.println(errors);</span>
+<span class="fc" id="L106">        return errors;</span>
+    }
+
+
+
+    public boolean isDesignationValid() {
+<span class="fc bfc" id="L112" title="All 4 branches covered.">        return &quot;Associate&quot;.equalsIgnoreCase(designation) || &quot;Account Manager&quot;.equalsIgnoreCase(designation);</span>
+    }
+
+    public boolean isEmailValid() {
+<span class="fc" id="L116">        return email.matches(&quot;^\\S+@\\S+\\.\\S+$&quot;);</span>
+    }
+
+    public boolean isDepartmentValid() {
+<span class="pc bpc" id="L120" title="1 of 4 branches missed.">        return &quot;Delivery&quot;.equalsIgnoreCase(department) || &quot;Sales&quot;.equalsIgnoreCase(department) ||</span>
+<span class="pc bpc" id="L121" title="2 of 4 branches missed.">               &quot;QA&quot;.equalsIgnoreCase(department) || &quot;Engineering&quot;.equalsIgnoreCase(department) ||</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">               &quot;BA&quot;.equalsIgnoreCase(department);</span>
+    }
+
+    public boolean isMobileValid() {
+<span class="pc bpc" id="L126" title="1 of 4 branches missed.">        return mobile != null &amp;&amp; mobile.matches(&quot;^\\d{10}$&quot;);</span>
+    }
+
+    public boolean isLocationValid() {
+<span class="pc bpc" id="L130" title="1 of 4 branches missed.">        return location != null &amp;&amp; !location.trim().isEmpty();</span>
+    }
+
+
+    public boolean isManagerIdValid() {
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        if (&quot;Account Manager&quot;.equalsIgnoreCase(designation)) {</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">            return managerId == 0;</span>
+        } else {
+<span class="pc bpc" id="L138" title="1 of 4 branches missed.">            return managerId != null &amp;&amp; managerId &gt; 0;</span>
+        }
+    }
+
+    // Method to validate the whole object
+    // public boolean isValid() {
+    //     return  isDesignationValid() &amp;&amp; isEmailValid() &amp;&amp;
+    //            isDepartmentValid() &amp;&amp; isMobileValid() &amp;&amp; isLocationValid() &amp;&amp;
+    //            isManagerIdValid();
+    // }
+
+
+    public Integer getEmployeeId() {
+<span class="fc" id="L151">        return employeeId;</span>
+    }
+
+    public void setEmployeeId(Integer employeeId) {
+<span class="fc" id="L155">        this.employeeId = employeeId;</span>
+<span class="fc" id="L156">    }</span>
+
+    public String getName() {
+<span class="fc" id="L159">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L163">        this.name = name;</span>
+<span class="fc" id="L164">    }</span>
+
+    
+
+    public String getDesignation() {
+<span class="fc" id="L169">        return designation;</span>
+    }
+
+    public void setDesignation(String designation) {
+<span class="fc" id="L173">        this.designation = designation;</span>
+<span class="fc" id="L174">    }</span>
+
+    public String getDepartment() {
+<span class="fc" id="L177">        return department;</span>
+    }
+
+    public void setDepartment(String department) {
+<span class="fc" id="L181">        this.department = department;</span>
+<span class="fc" id="L182">    }</span>
+
+    public String getEmail() {
+<span class="fc" id="L185">        return email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="nc" id="L189">        this.email = email;</span>
+<span class="nc" id="L190">    }</span>
+
+    
+    public String getMobile() {
+<span class="fc" id="L194">        return mobile;</span>
+    }
+
+    public void setMobile(String mobile) {
+<span class="nc" id="L198">        this.mobile = mobile;</span>
+<span class="nc" id="L199">    }</span>
+
+    public String getLocation() {
+<span class="fc" id="L202">        return location;</span>
+    }
+
+    public void setLocation(String location) {
+<span class="nc" id="L206">        this.location = location;</span>
+<span class="nc" id="L207">    }</span>
+
+    public Integer getManagerId() {
+<span class="fc" id="L210">        return managerId;</span>
+    }
+
+    public void setManagerId(Integer managerId) {
+<span class="fc" id="L214">        this.managerId = managerId;</span>
+<span class="fc" id="L215">    }</span>
+
+    public LocalDateTime getDateOfJoining() {
+<span class="fc" id="L218">        return dateOfJoining;</span>
+    }
+
+    public void setDateOfJoining(LocalDateTime dateOfJoining) {
+<span class="nc" id="L222">        this.dateOfJoining = dateOfJoining;</span>
+<span class="nc" id="L223">    }</span>
+
+    @Override
+    public String toString() {
+<span class="fc" id="L227">        return &quot;Employee{&quot; +</span>
+                &quot;employeeId=&quot; + employeeId +
+                &quot;, name='&quot; + name + '\'' +
+                &quot;, designation='&quot; + designation + '\'' +
+                &quot;, email='&quot; + email + '\'' +
+                &quot;, department='&quot; + department + '\'' +
+                &quot;, mobile='&quot; + mobile + '\'' +
+                &quot;, location='&quot; + location + '\'' +
+                &quot;, managerId=&quot; + managerId +
+                &quot;, dateOfJoining='&quot; + dateOfJoining + '\'' +
+                '}';
+    }
+
+    @Override
+public boolean equals(Object o) {
+<span class="fc bfc" id="L242" title="All 2 branches covered.">    if (this == o) return true;</span>
+<span class="pc bpc" id="L243" title="2 of 4 branches missed.">    if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L244">    Employee employee = (Employee) o;</span>
+<span class="fc" id="L245">    return Objects.equals(employeeId, employee.employeeId);</span>
+}
+
+@Override
+public int hashCode() {
+<span class="nc" id="L250">    return Objects.hash(employeeId);</span>
+}
+
+    
+    
+}
+
+/* 
+&quot;name&quot;: &quot;ken&quot;,
+    // designation can only be Account Manager or associate
+    &quot;designation&quot;: &quot;associate&quot;,
+    //validation for email
+    &quot;email&quot;: &quot;ken@aspire.com&quot;,
+    // detpartement can be (sales/delevery/QA/engineering/BA)
+    &quot;departement&quot;: &quot;sales&quot;,
+    // validation for mob number
+    &quot;mobile&quot;: 0000000000,
+    &quot;location&quot;: &quot;Trivandrum&quot;,
+    // manager id can be 0 if the designation is manager else it should be a valid manager id 
+    &quot;managerId&quot;: 1,
+    &quot;dateofJoining&quot;: &quot;2024-06-28T12:57:59.447+00:00&quot;
+
+
+    // designation can only be Account Manager or associate
+    //validation for email
+    // detpartement can be (sales/delevery/QA/engineering/BA)
+    // validation for mob number
+    // manager id can be 0 if the designation is manager else it should be a valid manager id 
+
+
+*/
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

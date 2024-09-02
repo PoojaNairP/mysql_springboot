@@ -1,0 +1,9 @@
+com\Aspire\tasktwo\Service\MainService.class
+com\Aspire\tasktwo\Model\Employee.class
+com\Aspire\tasktwo\Repository\EmployeeRepo.class
+com\Aspire\tasktwo\Controller\MainController.class
+com\Aspire\tasktwo\TasktwoApplication.class
+com\Aspire\tasktwo\Model\EmployeeResponse.class
+com\Aspire\tasktwo\Model\ManagerResponse.class
+com\Aspire\tasktwo\Model\UpdateEmployee.class
+com\Aspire\tasktwo\Model\EmployeeDetailsResponse.class

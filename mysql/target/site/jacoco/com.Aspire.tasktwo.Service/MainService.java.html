@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tasktwo</a> &gt; <a href="index.source.html" class="el_package">com.Aspire.tasktwo.Service</a> &gt; <span class="el_source">MainService.java</span></div><h1>MainService.java</h1><pre class="source lang-java linenums">package com.Aspire.tasktwo.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+// import java.util.Collections;
+import java.util.HashMap;
+//import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.Aspire.tasktwo.Model.Employee;
+import com.Aspire.tasktwo.Model.EmployeeDetailsResponse;
+import com.Aspire.tasktwo.Model.EmployeeResponse;
+import com.Aspire.tasktwo.Model.ManagerResponse;
+import com.Aspire.tasktwo.Model.UpdateEmployee;
+// import com.Aspire.tasktwo.Model.EmployeeDetailsResponse;
+// import com.Aspire.tasktwo.Model.GetEmployeeResponse;
+// import com.Aspire.tasktwo.Model.UpdateEmployee;
+import com.Aspire.tasktwo.Repository.EmployeeRepo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import jakarta.validation.Valid;
+
+@Service
+<span class="fc" id="L31">public class MainService {</span>
+
+    @Autowired
+    EmployeeRepo employeeRepo;
+
+
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; postData(@Valid List&lt;Employee&gt; employees) {
+<span class="fc" id="L38">        Map&lt;String, String&gt; errors = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L39">        List&lt;Employee&gt; validEmployees = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (Employee employee : employees) {</span>
+
+<span class="fc" id="L43">            List&lt;String&gt; validationErrors = employee.validate();</span>
+<span class="fc" id="L44">            System.out.println(validationErrors);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            if (!validationErrors.isEmpty()) {</span>
+<span class="fc" id="L46">                String combinedErrors = String.join(&quot;, &quot;, validationErrors); // Combine errors into a single string</span>
+<span class="fc" id="L47">                errors.put(&quot;error&quot;, combinedErrors); // Add combined errors to the map</span>
+<span class="fc" id="L48">                continue; </span>
+            }
+            // Check if employeeId already exists
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if (employeeRepo.existsById(employee.getEmployeeId())) {</span>
+<span class="fc" id="L52">                errors.put(&quot;error_&quot; + employee.getEmployeeId(), &quot;Employee ID &quot; + employee.getEmployeeId() + &quot; already exists.&quot;);</span>
+<span class="fc" id="L53">                continue; </span>
+            }
+            // Check if department already has a manager
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            if (&quot;Account Manager&quot;.equals(employee.getDesignation())) {</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">                if (employeeRepo.existsByDepartmentAndDesignation(employee.getDepartment(), &quot;Account Manager&quot;)) {</span>
+<span class="fc" id="L58">                    errors.put(&quot;error_&quot; + employee.getDepartment(), &quot;Department &quot; + employee.getDepartment() + &quot; already has a manager.&quot;);</span>
+<span class="fc" id="L59">                    continue;</span>
+                }
+            }
+            // Check whether the managerid and department provided matches
+<span class="fc" id="L63">            Optional&lt;Employee&gt; optionalEmployee = employeeRepo.findByDesignationAndDepartment(&quot;Account Manager&quot;, employee.getDepartment());</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">            if (optionalEmployee.isPresent()) {</span>
+<span class="fc" id="L65">                Integer employeeId = optionalEmployee.get().getEmployeeId();</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">                if (!employee.getManagerId().equals(employeeId)) {</span>
+<span class="fc" id="L67">                    errors.put(&quot;error_&quot; + employee.getDepartment(), &quot;Department &quot; + employee.getDepartment() + &quot; have the manager ID &quot;+employeeId);</span>
+<span class="fc" id="L68">                    continue;</span>
+                }
+            }
+<span class="fc" id="L71">            validEmployees.add(employee);</span>
+<span class="fc" id="L72">        }  </span>
+
+        try {
+<span class="fc" id="L75">            employeeRepo.saveAll(validEmployees);</span>
+<span class="fc" id="L76">            Map&lt;String, String&gt; successResult = new HashMap&lt;&gt;();</span>
+            //successResult.put(&quot;message&quot;, &quot;Data added to database successfully&quot;);
+<span class="fc" id="L78">            successResult.putAll(validEmployees.stream()</span>
+<span class="fc" id="L79">                .collect(Collectors.toMap(</span>
+<span class="fc" id="L80">                    emp -&gt; &quot;employee_&quot; + emp.getEmployeeId(),</span>
+<span class="fc" id="L81">                    emp -&gt; &quot;Employee ID &quot; + emp.getEmployeeId() + &quot; is saved.&quot;</span>
+                )));
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            if(errors.isEmpty())</span>
+<span class="fc" id="L84">                return new ResponseEntity&lt;&gt;(successResult, HttpStatus.OK);</span>
+            else{
+<span class="fc" id="L86">                errors.putAll(successResult);</span>
+<span class="fc" id="L87">                return new ResponseEntity&lt;&gt;(errors,HttpStatus.OK);</span>
+            }
+<span class="fc" id="L89">        } catch (Exception e) {</span>
+<span class="fc" id="L90">            Map&lt;String, String&gt; errorResult = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L91">            errorResult.put(&quot;error&quot;, &quot;Error adding data to database: &quot; + e.getMessage());</span>
+<span class="fc" id="L92">            return new ResponseEntity&lt;&gt;(errorResult, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+        }
+    }
+
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; updateEmployeeManagers(List&lt;UpdateEmployee&gt; employeeManagerPairs) {
+<span class="fc" id="L97">        Map&lt;String, String&gt; responseMessages = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L98">        Map&lt;String, String&gt; failedUpdates = new HashMap&lt;&gt;();</span>
+        //List&lt;UpdateEmployee&gt; validEmployees = new ArrayList&lt;&gt;();
+
+
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for(UpdateEmployee updateEmployee:employeeManagerPairs){</span>
+            //check if no body is given
+<span class="fc" id="L105">            Integer employeeId = updateEmployee.getEmployeeId();</span>
+<span class="fc" id="L106">            Integer newManagerId = updateEmployee.getManagerId();</span>
+<span class="fc" id="L107">            System.out.println(employeeId+&quot; &quot;+newManagerId);</span>
+<span class="pc bpc" id="L108" title="1 of 4 branches missed.">            if (employeeId==0 || newManagerId == 0) {</span>
+<span class="fc" id="L109">                failedUpdates.put(&quot;error_&quot; + updateEmployee.getEmployeeId(), &quot;Employee ID or Manager ID is missing&quot;);</span>
+<span class="fc" id="L110">                continue;</span>
+            }
+
+            // check if employee is present or not
+<span class="fc" id="L114">            Employee employee = employeeRepo.findById(employeeId).orElse(null);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">            if (employee == null) {</span>
+<span class="fc" id="L116">                failedUpdates.put(&quot;error_&quot; + employeeId, &quot;Employee not found&quot;);</span>
+<span class="fc" id="L117">                continue;</span>
+            }
+
+            // Fetch current manager and check if manager is present or not
+<span class="fc" id="L121">            Employee currentManager = employeeRepo.findById(employee.getManagerId()).orElse(null);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            if (currentManager == null) {</span>
+<span class="fc" id="L123">                failedUpdates.put(&quot;error_&quot; + employeeId, &quot;Current manager not found&quot;);</span>
+<span class="fc" id="L124">                continue;</span>
+            }
+
+            // Fetch new manager and check if manager exists or not
+<span class="fc" id="L128">            Employee newManager = employeeRepo.findById(newManagerId).orElse(null);</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">            if (newManager == null) {</span>
+<span class="fc" id="L130">                failedUpdates.put(&quot;error_&quot; + employeeId, &quot;New manager not found&quot;);</span>
+<span class="fc" id="L131">                continue;</span>
+            }
+
+<span class="fc bfc" id="L134" title="All 2 branches covered.">            if(currentManager.getEmployeeId()==newManager.getEmployeeId()){</span>
+<span class="fc" id="L135">                failedUpdates.put(&quot;error_&quot; + employeeId, &quot;New manager is same as the current manager&quot;);</span>
+<span class="fc" id="L136">                continue;</span>
+            }
+
+            // Check if employee is in the current manager's list
+<span class="fc" id="L140">            List&lt;Employee&gt; employeesManagedByCurrent = employeeRepo.findByManagerId(employee.getManagerId());</span>
+
+<span class="fc" id="L142">            System.out.println(&quot;Employees managed by &quot; + currentManager.getName() + &quot;:&quot;);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            for (Employee emp : employeesManagedByCurrent) {</span>
+<span class="fc" id="L144">                System.out.println(emp);</span>
+<span class="fc" id="L145">            }</span>
+
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (!employeesManagedByCurrent.contains(employee)) {</span>
+<span class="fc" id="L148">                failedUpdates.put(&quot;error_&quot; + employeeId, &quot;Employee is not in the current manager's list&quot;);</span>
+<span class="fc" id="L149">                continue;</span>
+            }
+        
+
+            // Remove employee from current manager's list
+<span class="fc" id="L154">            employeesManagedByCurrent.remove(employee);</span>
+<span class="fc" id="L155">            employeeRepo.saveAll(employeesManagedByCurrent);</span>
+
+            // Update employee's managerId and department
+<span class="fc" id="L158">            employee.setManagerId(newManagerId);</span>
+<span class="fc" id="L159">            employee.setDepartment(newManager.getDepartment());</span>
+<span class="fc" id="L160">            employeeRepo.save(employee);</span>
+
+            // Add employee to new manager's list
+<span class="fc" id="L163">            List&lt;Employee&gt; employeesManagedByNew = employeeRepo.findEmployeesByManagerId(newManagerId);</span>
+<span class="fc" id="L164">            employeesManagedByNew.add(employee);</span>
+<span class="fc" id="L165">            employeeRepo.saveAll(employeesManagedByNew);</span>
+
+            // Success message for this employee
+<span class="fc" id="L168">            String message = String.format(&quot;%s's manager has been successfully changed from %s to %s.&quot;,</span>
+<span class="fc" id="L169">                    employee.getName(), currentManager.getName(), newManager.getName());</span>
+<span class="fc" id="L170">            responseMessages.put(&quot;employee_&quot; + employeeId, message);</span>
+<span class="fc" id="L171">        }</span>
+    
+
+        // Convert failedUpdates to Map&lt;String, String&gt;
+<span class="fc" id="L175">        responseMessages.putAll(failedUpdates);</span>
+    
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        if (!failedUpdates.isEmpty()) {</span>
+<span class="fc" id="L178">            return new ResponseEntity&lt;&gt;(responseMessages, HttpStatus.BAD_REQUEST);</span>
+        }
+
+<span class="fc" id="L181">        return new ResponseEntity&lt;&gt;(responseMessages, HttpStatus.OK);</span>
+    }
+    
+
+    public ResponseEntity&lt;EmployeeDetailsResponse&gt; getEmployeeDetails(int managerId, int yearsOfExperience) {
+<span class="fc" id="L186">        LocalDateTime currentDateTime = LocalDateTime.now();</span>
+<span class="fc" id="L187">        List&lt;Employee&gt; employees = employeeRepo.findAll();</span>
+    
+        // Calculate the cutoff datetime for experience filtering
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">        LocalDateTime experienceCutoffDateTime = yearsOfExperience != -1</span>
+<span class="fc" id="L191">                ? currentDateTime.minusYears(yearsOfExperience)</span>
+<span class="pc" id="L192">                : null;</span>
+    
+        // Filter employees based on experience and manager ID
+<span class="fc" id="L195">        List&lt;EmployeeResponse&gt; filteredEmployees = employees.stream()</span>
+<span class="fc" id="L196">            .filter(employee -&gt; {</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">                boolean matchesExperience = experienceCutoffDateTime == null</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">                        || employee.getDateOfJoining().compareTo(experienceCutoffDateTime) &lt;= 0;</span>
+<span class="pc bpc" id="L199" title="1 of 4 branches missed.">                boolean matchesManager = managerId == 0 || employee.getManagerId() == managerId;</span>
+<span class="pc bpc" id="L200" title="1 of 4 branches missed.">                return matchesExperience &amp;&amp; matchesManager;</span>
+            })
+<span class="fc" id="L202">            .map(emp -&gt; new EmployeeResponse(</span>
+<span class="fc" id="L203">                emp.getName(),</span>
+<span class="fc" id="L204">                emp.getEmployeeId(),</span>
+<span class="fc" id="L205">                emp.getDesignation(),</span>
+<span class="fc" id="L206">                emp.getDepartment(),</span>
+<span class="fc" id="L207">                emp.getEmail(),</span>
+<span class="fc" id="L208">                emp.getMobile(),</span>
+<span class="fc" id="L209">                emp.getLocation(),</span>
+<span class="fc" id="L210">                emp.getDateOfJoining(),</span>
+<span class="fc" id="L211">                emp.getDateOfJoining(), // Assuming you have these methods</span>
+<span class="fc" id="L212">                emp.getDateOfJoining()  // Assuming you have these methods</span>
+            ))
+<span class="fc" id="L214">            .collect(Collectors.toList());</span>
+
+<span class="fc" id="L216">            Optional&lt;Employee&gt; managerOptional = employeeRepo.findById(managerId);</span>
+<span class="fc" id="L217">        ManagerResponse managerResponse = new ManagerResponse(</span>
+<span class="fc" id="L218">            managerOptional.map(Employee::getName).orElse(&quot;Unknown&quot;),</span>
+<span class="fc" id="L219">            managerOptional.map(Employee::getDepartment).orElse(&quot;Unknown&quot;),</span>
+<span class="fc" id="L220">            managerOptional.map(Employee::getEmployeeId).orElse(0)</span>
+        );
+    
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if (filteredEmployees.isEmpty()) {</span>
+           // Map&lt;String, Object&gt; errors = new HashMap&lt;&gt;();
+           // errors.put(&quot;error&quot;, &quot;No employee exists with the given credentials&quot;);
+<span class="fc" id="L226">           EmployeeDetailsResponse errorResponse = new EmployeeDetailsResponse(</span>
+            &quot;No employee exists with the given credentials&quot;,
+            managerResponse,
+            filteredEmployees
+        );
+<span class="fc" id="L231">            return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.NOT_FOUND);</span>
+        }
+    
+        // Fetch manager details
+        
+    
+        // Prepare the response
+<span class="fc" id="L238">        EmployeeDetailsResponse response = new EmployeeDetailsResponse(</span>
+            &quot;Successfully fetched&quot;,
+            managerResponse,
+            filteredEmployees
+        );
+    
+<span class="fc" id="L244">        return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    // public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getEmployeeDetails(int managerId, int yearsOfExperience) {
+    //     LocalDateTime currentDateTime = LocalDateTime.now();
+    //     List&lt;Employee&gt; employees = employeeRepo.findAll();
+    //     Map&lt;String, Object&gt; errors = new HashMap&lt;&gt;();
+ 
+    //     // Calculate the cutoff datetime for experience filtering
+    //     LocalDateTime experienceCutoffDateTime = yearsOfExperience != -1
+    //             ? currentDateTime.minusYears(yearsOfExperience)
+    //             : null;
+ 
+    //     List&lt;Employee&gt; filteredEmployees = employees.stream()
+    //         .filter(employee -&gt; {
+    //             // Calculate experience using compareTo
+    //             boolean matchesExperience = experienceCutoffDateTime == null
+    //                     || employee.getDateOfJoining().compareTo(experienceCutoffDateTime) &lt;= 0;
+    //             boolean matchesManager = managerId == 0 || employee.getManagerId() == managerId;
+    //             return matchesExperience &amp;&amp; matchesManager;
+    //         })
+    //         .collect(Collectors.toList());
+    //         if(filteredEmployees.isEmpty()){
+    //             errors.put(&quot;error&quot;,&quot;No employee exists with the given credentials&quot;);
+    //             return new ResponseEntity&lt;&gt;(errors, HttpStatus.NOT_FOUND);
+    //         }
+ 
+    //         Optional&lt;Employee&gt; accountManagerOptional = employeeRepo.findById(managerId);
+    //         Integer accountManagerId= accountManagerOptional.map(Employee::getEmployeeId).orElse(0);
+    //         String accountManagerName = accountManagerOptional.map(Employee::getName).orElse(&quot;Unknown&quot;);
+    //         String accountManagerDepartment=accountManagerOptional.map(Employee::getDepartment).orElse(&quot;Unknown&quot;);
+ 
+ 
+    //         Map&lt;String, Object&gt; response = new LinkedHashMap&lt;&gt;();
+    //         response.put(&quot;message&quot;, &quot;successfully fetched&quot;);
+ 
+    //         Map&lt;String, Object&gt; details = new LinkedHashMap&lt;&gt;();
+    //         details.put(&quot;accountManager&quot;, accountManagerName);
+    //         details.put(&quot;department&quot;, accountManagerDepartment);
+    //         details.put(&quot;id&quot;, accountManagerId);
+    //         details.put(&quot;employeeList&quot;, filteredEmployees.stream().map(emp -&gt; {
+    //             Map&lt;String, Object&gt; employeeDetails = new LinkedHashMap&lt;&gt;();
+    //             employeeDetails.put(&quot;name&quot;, emp.getName());
+    //             employeeDetails.put(&quot;id&quot;, emp.getEmployeeId());
+    //             employeeDetails.put(&quot;designation&quot;, emp.getDesignation());
+    //             employeeDetails.put(&quot;department&quot;, emp.getDepartment());
+    //             employeeDetails.put(&quot;email&quot;, emp.getEmail());
+    //             employeeDetails.put(&quot;mobile&quot;, emp.getMobile());
+    //             employeeDetails.put(&quot;location&quot;, emp.getLocation());
+    //             employeeDetails.put(&quot;dateOfJoining&quot;, emp.getDateOfJoining());
+    //             employeeDetails.put(&quot;createdTime&quot;, emp.getDateOfJoining());
+    //             employeeDetails.put(&quot;updatedTime&quot;, emp.getDateOfJoining());
+    //             return employeeDetails;
+    //         }).collect(Collectors.toList()));
+ 
+    //    response.put(&quot;details&quot;, List.of(details));
+ 
+    //     // Map the list of employees to a response format
+    //     // Map&lt;String, Object&gt; response = Map.of(
+    //     //     &quot;employees&quot;, filteredEmployees.stream().map(emp -&gt; Map.of(
+    //     //         &quot;employeeId&quot;, emp.getEmployeeId(),
+    //     //         &quot;name&quot;, emp.getName(),
+    //     //         &quot;designation&quot;, emp.getDesignation(),
+    //     //         &quot;department&quot;, emp.getDepartment(),
+    //     //         &quot;location&quot;, emp.getLocation(),
+    //     //         &quot;dateOfJoining&quot;, emp.getDateOfJoining()
+    //     //     )).collect(Collectors.toList())
+    //     // );
+ 
+    //     return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);
+    // }
+
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; deleteEmployee(int employeeId) {
+<span class="fc" id="L329">        Optional&lt;Employee&gt; employeeOptional = employeeRepo.findByEmployeeId(employeeId);</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        if (employeeOptional.isEmpty()) {</span>
+<span class="fc" id="L331">            return new ResponseEntity&lt;&gt;(Map.of(&quot;message&quot;, &quot;Employee not found&quot;), HttpStatus.NOT_FOUND);</span>
+        }
+
+        // Check if there are subordinates
+<span class="fc" id="L335">        List&lt;Employee&gt; subordinates = employeeRepo.findByManagerId(employeeId);</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">        if (!subordinates.isEmpty()) {</span>
+<span class="fc" id="L337">            return new ResponseEntity&lt;&gt;(Map.of(&quot;message&quot;, &quot;Cannot delete employee with subordinates&quot;), HttpStatus.BAD_REQUEST);</span>
+        }
+
+        // Delete the employee
+<span class="fc" id="L341">        employeeRepo.deleteById(employeeId);</span>
+
+        // Return success message
+<span class="fc" id="L344">        return new ResponseEntity&lt;&gt;(Map.of(&quot;message&quot;, &quot;Successfully deleted employee with ID &quot; + employeeId), HttpStatus.OK);</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
